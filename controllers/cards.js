@@ -1,23 +1,45 @@
 const Card = require('../models/card');
+const UserNotFound = require('../errors/errors');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((card) => res.send({ data: card }))
+    .catch((error) => {
+      if (error.name === 'ValidatorError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((card) => res.send({ data: card }))
+    .catch((error) => {
+      if (error.name === 'ValidatorError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.deleteCards = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .orFail(() => {
+      throw new UserNotFound();
+    })
+    .then((card) => res.status(200).send({ data: card }))
+    .catch((error) => {
+      if (error.name === 'UserNotFound') {
+        res.status(error.status).send(error);
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.putLikes = (req, res) => {
@@ -26,8 +48,17 @@ module.exports.putLikes = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .orFail(() => {
+      throw new UserNotFound();
+    })
+    .then((users) => res.status(200).send({ data: users }))
+    .catch((error) => {
+      if (error.name === 'UserNotFound') {
+        res.status(error.status).send(error);
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.deleteLikes = (req, res) => {
@@ -36,6 +67,15 @@ module.exports.deleteLikes = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .orFail(() => {
+      throw new UserNotFound();
+    })
+    .then((users) => res.status(200).send({ data: users }))
+    .catch((error) => {
+      if (error.name === 'UserNotFound') {
+        res.status(error.status).send(error);
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
