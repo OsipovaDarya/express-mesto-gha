@@ -18,6 +18,5 @@ const userShema = new mongoose.Schema({
     required: true,
   },
 });
-const user = mongoose.model('card', userShema);
 
-module.exports = user;
+module.exports = mongoose.model('User', userShema);
