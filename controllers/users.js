@@ -5,7 +5,7 @@ module.exports.getUsers = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
     .catch((error) => {
-      if (error.name === 'ValidatorError') {
+      if (error.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
@@ -33,8 +33,8 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((error) => {
-      if (error.name === 'ValidatorError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+      if (error.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы неккоректные данные' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
