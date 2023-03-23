@@ -66,7 +66,7 @@ module.exports.deleteLikes = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      throw new UserNotFound();
+      throw new CastError();
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
