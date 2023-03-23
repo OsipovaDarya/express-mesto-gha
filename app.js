@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const path = require('path');
+
 const usersRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 
@@ -17,12 +17,12 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use(express.static(path.join(__dirname, 'public')));
-
-
 
 app.use('/', usersRouter);
 app.use('/', cardRouter);
+app.use((req, res) => {
+  res.status(404).send({ message: 'Несуществующая страница' });
+});
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 

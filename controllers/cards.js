@@ -1,15 +1,12 @@
 const Card = require('../models/card');
-const UserNotFound = require('../errors/errors');
+const UserNotFound = require('../errors/AplicationError');
+const { BAD_REQUEST, INTERNAL_SERVERE_ERROR } = require('../errors/Constans');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((card) => res.send({ data: card }))
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
-      } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
-      }
+    .catch(() => {
+      res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
 
@@ -20,9 +17,9 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -35,9 +32,9 @@ module.exports.deleteCards = (req, res) => {
     .then((card) => res.status(200).send({ data: card }))
     .catch((error) => {
       if (error.name === 'UserNotFound') {
-        res.status(error.status).send(error);
+        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -51,12 +48,12 @@ module.exports.putLikes = (req, res) => {
     .orFail(() => {
       throw new UserNotFound();
     })
-    .then((users) => res.status(200).send({ data: users }))
+    .then((users) => res.send({ data: users }))
     .catch((error) => {
       if (error.name === 'UserNotFound') {
-        res.status(error.status).send(error);
+        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -70,12 +67,12 @@ module.exports.deleteLikes = (req, res) => {
     .orFail(() => {
       throw new UserNotFound();
     })
-    .then((users) => res.status(200).send({ data: users }))
+    .then((users) => res.send({ data: users }))
     .catch((error) => {
-      if (error.name === 'UserNotFound') {
-        res.status(error.status).send(error);
+      if (error.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };

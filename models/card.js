@@ -23,7 +23,6 @@ const сardsShema = new mongoose.Schema({
   }],
   createdAt: {
     type: Date,
-    ref: 'user',
     default: Date.now,
   },
 });

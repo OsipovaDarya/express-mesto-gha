@@ -1,14 +1,16 @@
 const User = require('../models/user');
-const UserNotFound = require('../errors/errors');
+const UserNotFound = require('../errors/AplicationError');
+const { BAD_REQUEST, INTERNAL_SERVERE_ERROR } = require('../errors/Constans');
 
 module.exports.getUsers = (req, res) => {
+  console.log(INTERNAL_SERVERE_ERROR);
   User.find({})
     .then((user) => res.send({ data: user }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -18,13 +20,9 @@ module.exports.getUser = (req, res) => {
     .orFail(() => {
       throw new UserNotFound();
     })
-    .then((users) => res.status(200).send({ data: users }))
-    .catch((error) => {
-      if (error.name === 'UserNotFound') {
-        res.status(error.status).send(error);
-      } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
-      }
+    .then((users) => res.send({ data: users }))
+    .catch(() => {
+      res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
 
@@ -34,9 +32,9 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы неккоректные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -47,12 +45,12 @@ module.exports.updateUser = (req, res) => {
     .orFail(() => {
       throw new UserNotFound();
     })
-    .then((users) => res.status(200).send({ data: users }))
+    .then((users) => res.send({ data: users }))
     .catch((error) => {
-      if (error.name === 'ValidationError') {
-        res.status(400).send(error);
+      if (error.name === 'UserNotFound') {
+        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -63,12 +61,12 @@ module.exports.updateUserAvatar = (req, res) => {
     .orFail(() => {
       throw new UserNotFound();
     })
-    .then((users) => res.status(200).send({ data: users }))
+    .then((users) => res.send({ data: users }))
     .catch((error) => {
-      if (error.name === 'UserNotFound') {
-        res.status(error.status).send(error);
+      if (error.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };

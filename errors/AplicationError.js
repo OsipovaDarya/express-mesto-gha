@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 class AplicationError extends Error {
   constructor(status = 500, message = 'Внутрення ошибка') {
     super();
@@ -10,10 +9,4 @@ class AplicationError extends Error {
   }
 }
 
-class UserNotFound extends AplicationError {
-  constructor() {
-    super(404, 'Пользователь не найден');
-  }
-}
-
-module.export = UserNotFound;
+module.exports = AplicationError;
