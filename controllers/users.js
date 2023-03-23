@@ -3,7 +3,6 @@ const UserNotFound = require('../errors/AplicationError');
 const { BAD_REQUEST, INTERNAL_SERVERE_ERROR } = require('../errors/Constans');
 
 module.exports.getUsers = (req, res) => {
-  console.log(INTERNAL_SERVERE_ERROR);
   User.find({})
     .then((user) => res.send({ data: user }))
     .catch((error) => {
