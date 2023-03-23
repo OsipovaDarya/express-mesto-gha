@@ -1,6 +1,7 @@
 const User = require('../models/user');
-const UserNotFound = require('../errors/AplicationError');
+const UserNotFound = require('../errors/UserNotFound');
 const { BAD_REQUEST, INTERNAL_SERVERE_ERROR } = require('../errors/Constans');
+const CastError = require('../errors/CastError');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -17,11 +18,16 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      throw new UserNotFound();
+      throw new CastError();
     })
     .then((users) => res.send({ data: users }))
-    .catch(() => {
-      res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+    .catch((error) => {
+      console.log('fsdf', error);
+      if (error.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+      }
     });
 };
 

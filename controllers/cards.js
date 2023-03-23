@@ -1,6 +1,7 @@
 const Card = require('../models/card');
-const UserNotFound = require('../errors/AplicationError');
+const UserNotFound = require('../errors/UserNotFound');
 const { BAD_REQUEST, INTERNAL_SERVERE_ERROR } = require('../errors/Constans');
+const CastError = require('../errors/CastError');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -46,11 +47,11 @@ module.exports.putLikes = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      throw new UserNotFound();
+      throw new CastError();
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
-      if (error.name === 'UserNotFound') {
+      if (error.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       } else {
         res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });

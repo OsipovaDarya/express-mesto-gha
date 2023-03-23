@@ -1,5 +1,7 @@
+const { INTERNAL_SERVERE_ERROR } = require('./Constans');
+
 class AplicationError extends Error {
-  constructor(status = 500, message = 'Внутрення ошибка') {
+  constructor(status = INTERNAL_SERVERE_ERROR, message = 'Внутрення ошибка') {
     super();
     this.status = status;
     this.message = message;

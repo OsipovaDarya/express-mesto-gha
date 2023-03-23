@@ -1,8 +1,9 @@
 const AplicationError = require('./AplicationError');
+const { NOT_FOUND } = require('./Constans');
 
 class UserNotFound extends AplicationError {
   constructor() {
-    super(404, 'Пользователь не найден');
+    super(NOT_FOUND, 'Пользователь не найден');
   }
 }
 
