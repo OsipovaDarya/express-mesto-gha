@@ -1,30 +1,24 @@
 const User = require('../models/user');
 const UserNotFound = require('../errors/UserNotFound');
-const { BAD_REQUEST, INTERNAL_SERVERE_ERROR } = require('../errors/Constans');
-const CastError = require('../errors/CastError');
+const { BAD_REQUEST, INTERNAL_SERVERE_ERROR, NOT_FOUND } = require('../errors/Constans');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
-      } else {
-        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
-      }
+    .catch(() => {
+      res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      throw new CastError();
+      throw new UserNotFound();
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
-      console.log('fsdf', error);
-      if (error.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
+      if (error.name === 'UserNotFound') {
+        res.status(NOT_FOUND).send({ message: 'Переданы некорректные данные' });
       } else {
         res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
@@ -52,7 +46,7 @@ module.exports.updateUser = (req, res) => {
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
-      if (error.name === 'UserNotFound') {
+      if (error.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       } else {
         res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
@@ -68,8 +62,8 @@ module.exports.updateUserAvatar = (req, res) => {
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
-      if (error.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
+      if (error.name === 'UserNotFound') {
+        res.status(NOT_FOUND).send({ message: 'Ошибка проверки данных' });
       } else {
         res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
