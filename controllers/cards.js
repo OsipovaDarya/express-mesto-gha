@@ -33,7 +33,7 @@ module.exports.deleteCards = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Ошибка проверки данных' });
+        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       } else {
         res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
