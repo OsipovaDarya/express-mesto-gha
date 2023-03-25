@@ -17,6 +17,9 @@ module.exports.getUser = (req, res) => {
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
+      }
       if (error.name === 'UserNotFound') {
         res.status(NOT_FOUND).send({ message: 'Переданы некорректные данные' });
       } else {
