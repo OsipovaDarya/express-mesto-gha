@@ -5,8 +5,12 @@ const { BAD_REQUEST, INTERNAL_SERVERE_ERROR, NOT_FOUND } = require('../errors/Co
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch(() => {
-      res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
+      } else {
+        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+      }
     });
 };
 
