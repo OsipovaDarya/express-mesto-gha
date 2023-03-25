@@ -36,7 +36,7 @@ module.exports.deleteCards = (req, res) => {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       }
       if (error.name === 'UserNotFound') {
-        res.status(NOT_FOUND).send({ message: 'Ошибка проверки данных' });
+        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
@@ -54,8 +54,11 @@ module.exports.putLikes = (req, res) => {
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
+      }
       if (error.name === 'UserNotFound') {
-        res.status(NOT_FOUND).send({ message: 'Ошибка проверки данных' });
+        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
@@ -73,8 +76,11 @@ module.exports.deleteLikes = (req, res) => {
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
+      }
       if (error.name === 'UserNotFound') {
-        res.status(NOT_FOUND).send({ message: 'Ошибка проверки данных' });
+        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
       }
