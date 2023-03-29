@@ -9,19 +9,20 @@ const {
   BAD_REQUEST, INTERNAL_SERVERE_ERROR, NOT_FOUND,
 } = require('../errors/Constans');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((user) => res.send({ data: user }))
-    .catch((error) => {
-      if (error.name === 'UserNotFound') {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
-      } else {
-        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+    .then((user) => {
+      if (!user) {
+        throw new UserNotFound('Пользователь не найден');
       }
+      return res.send(user);
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => {
       throw new UserNotFound();
@@ -29,7 +30,7 @@ module.exports.getUser = (req, res) => {
     .then((users) => res.send({ data: users }))
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
+        next(new BAD_REQUEST('Ошибка проверки данных'));
       }
       if (error.name === 'UserNotFound') {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
