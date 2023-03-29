@@ -4,6 +4,7 @@ const User = require('../models/user');
 const UserNotFound = require('../errors/UserNotFound');
 const ConflictingRequest = require('../errors/ConflictingRequest');
 const CastError = require('../errors/CastError');
+const AuthorizedError = require('../errors/AuthorizedError');
 
 const {
   BAD_REQUEST, INTERNAL_SERVERE_ERROR, NOT_FOUND,
@@ -13,7 +14,7 @@ module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((user) => {
       if (!user) {
-        throw new UserNotFound('Пользователь не найден');
+        throw new AuthorizedError('Нужно пройти авторизацию');
       }
       return res.send(user);
     })
