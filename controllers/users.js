@@ -86,6 +86,16 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
+// user/me
+module.exports.getInformUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(() => {
+      throw new UserNotFound();
+    })
+    .then((users) => res.send({ data: users }))
+    .catch(next);
+};
+
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
