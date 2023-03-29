@@ -20,10 +20,14 @@
   },
   "homepage": "https://github.com/OsipovaDarya/express-mesto-gha#readme",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "body": "^5.1.0",
     "body-parser": "^1.20.2",
+    "celebrate": "^15.0.1",
     "express": "^4.18.2",
-    "mongoose": "^7.0.1"
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.1",
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "eslint": "^8.36.0",

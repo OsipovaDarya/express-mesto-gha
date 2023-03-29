@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 
 const usersRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
+const indexRouter = require('./routes/index');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 
 app.use('/', usersRouter);
 app.use('/', cardRouter);
+app.use('/', indexRouter);
 app.use((req, res) => {
   res.status(404).send({ message: 'Несуществующая страница' });
 });
