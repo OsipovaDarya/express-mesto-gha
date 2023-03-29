@@ -36,7 +36,7 @@ module.exports.getUser = (req, res, next) => {
       if (error.name === 'UserNotFound') {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
-        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+        next(error);
       }
     });
 };
@@ -75,7 +75,7 @@ module.exports.login = (req, res, next) => {
       if (matched) {
         return user;
       }
-      return res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+      next(new UserNotFound('Пользователь не найден'));
     }))
     .then((user) => {
       const token = jwt.sign(
@@ -98,7 +98,7 @@ module.exports.getInformUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
@@ -107,12 +107,9 @@ module.exports.updateUser = (req, res) => {
     .then((users) => res.send({ data: users }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
-      }
-      if (error.name === 'UserNotFound') {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+        next(new CastError('Пользователь не найден'));
       } else {
-        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+        next(error);
       }
     });
 };
