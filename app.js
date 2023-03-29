@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const handleErrors = require('./errors/handleErrors');
-
+require('dotenv').config();
 const usersRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const indexRouter = require('./routes/index');
@@ -14,6 +14,7 @@ const { PORT = 3000 } = process.env;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use((req, res, next) => {
   req.user = {
     _id: '64117cad65139c2ae0c2e769',

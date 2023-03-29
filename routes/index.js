@@ -19,6 +19,7 @@ router.post('/signin', celebrate({
     password: Joi.string().required().min(6),
   }),
 }), login);
+
 router.use(auth);
 
 module.exports = router;

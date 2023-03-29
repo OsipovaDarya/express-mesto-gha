@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 const UserNotFound = require('../errors/UserNotFound');
 const ConflictingRequest = require('../errors/ConflictingRequest');
 const CastError = require('../errors/CastError');
@@ -75,18 +77,32 @@ module.exports.login = (req, res, next) => {
       if (matched) {
         return user;
       }
-      next(new UserNotFound('Пользователь не найден'));
+      return next(new UserNotFound('Пользователь не найден'));
     }))
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'dev-secret',
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
       res.send({ user, token });
     })
     .catch(next);
 };
+// module.exports.login = (req, res, next) => {
+//   const { email, password } = req.body;
+
+//   return User.findUserByCredentials(email, password)
+//     .then((user) => {
+//       const token = jwt.sign(
+//         { _id: user._id },
+//         'dev-secret',
+//         { expiresIn: '7d' },
+//       );
+//       res.send({ user, token });
+//     })
+//     .catch(next);
+// };
 
 // user/me
 module.exports.getInformUser = (req, res, next) => {
