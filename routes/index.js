@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { createUser, login } = require('../controllers/users');
-const { auth } = require('../middlewares/auth');
+const auth = require('../middlewares/auth');
 const usersRoutes = require('./users');
 const cardsRoutes = require('./cards');
 const UserNotFound = require('../errors/UserNotFound');
@@ -25,9 +25,9 @@ router.post('/signin', celebrate({
 
 router.use(auth);
 
-router.use('/', usersRoutes);
+router.use('/users', usersRoutes);
 router.use('/', cardsRoutes);
 
-router.use((req, res, next) => next(new UserNotFound('Неправильный путь')));
+router.use('*', (req, res, next) => next(new UserNotFound('Неправильный путь')));
 
 module.exports = router;

@@ -3,23 +3,21 @@ const AuthorizedError = require('../errors/AuthorizedError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-module.exports.auth = (req, res, next) => {
+module.exports = (req, res, next) => {
+  console.log('fsdf', NODE_ENV);
   const { authorization } = req.headers;
-
-  if (!authorization || !authorization.startWith('Bearer')) {
-    next(new AuthorizedError('Необходима авторизация'));
-    return;
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return next(new AuthorizedError('Необходима авторизация'));
   }
-  let payload;
   const token = authorization.replace('Bearer ', '');
+  let payload;
+
   try {
     payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
   } catch (err) {
-    next(new AuthorizedError('Необходима авторизация'));
-    return;
+    return next(new AuthorizedError('Необходима авторизация'));
   }
 
   req.user = payload;
-
-  next();
+  return next();
 };

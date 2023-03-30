@@ -45,19 +45,25 @@ module.exports.getUser = (req, res, next) => {
 
 module.exports.createUser = (req, res, next) => {
   const {
-    name,
-    about,
-    avatar,
-    email,
-    password,
+    name, about, avatar, email, password,
   } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
     }))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      _id: user._id,
+      email: user.email,
+    }))
     .catch((error) => {
-      if (error.code === '11000') {
+      if (error.code === 11000) {
         next(new ConflictingRequest('Такой пользователь уже существует'));
         return;
       }
@@ -70,48 +76,29 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.login = (req, res, next) => {
+  console.log('fsdfsdffsdfdfsdf', req.user._id);
   const { email, password } = req.body;
-
-  return User.findOne({ email }).select('+password')
-    .then((user) => bcrypt.compare(password, user.password).then((matched) => {
-      if (matched) {
-        return user;
-      }
-      return next(new UserNotFound('Пользователь не найден'));
-    }))
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' },
-      );
-      res.send({ user, token });
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
+      res.send({ token });
     })
-    .catch(next);
+    .catch((error) => {
+      console.log(error);
+      next(error);
+    });
 };
-// module.exports.login = (req, res, next) => {
-//   const { email, password } = req.body;
-
-//   return User.findUserByCredentials(email, password)
-//     .then((user) => {
-//       const token = jwt.sign(
-//         { _id: user._id },
-//         'dev-secret',
-//         { expiresIn: '7d' },
-//       );
-//       res.send({ user, token });
-//     })
-//     .catch(next);
-// };
 
 // user/me
-module.exports.getInformUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(() => {
-      throw new UserNotFound();
-    })
-    .then((users) => res.send({ data: users }))
-    .catch(next);
+module.exports.getUserMe = (req, res) => {
+  console.log('fsdfsdffsdfdfsdf', req.user._id);
+  // User.findById(req.user._id)
+  //   .orFail(() => {
+  //     throw new UserNotFound();
+  //   })
+  //   .then((user) => res.send(user))
+  //   .catch(next);
+  res.send('ffsdfs');
 };
 
 module.exports.updateUser = (req, res, next) => {
