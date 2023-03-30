@@ -8,13 +8,11 @@ const {
 
 router.get('/', getUsers);
 
-router.get('/me', (req, res) => {
-  res.send('хуйня');
-});
+router.get('/me', getUserMe);
 
 router.get('/:userId', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().length(24).hex(),
+    userId: Joi.string().length(24).hex(),
   }),
 }), getUser);
 // router.post('/users', createUser); // cоздает

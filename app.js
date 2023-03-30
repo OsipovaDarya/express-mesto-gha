@@ -29,7 +29,7 @@ app.use(router);
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
-app.use(errors());
+router.use(errors());
 app.use(handleErrors);
 
 app.listen(PORT, () => {

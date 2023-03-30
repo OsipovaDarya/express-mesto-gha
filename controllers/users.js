@@ -26,12 +26,15 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.userId)
+  const { userId } = req.params;
+  console.log('fsdf', userId);
+  User.findById(userId)
     .orFail(() => {
       throw new UserNotFound();
     })
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send(users))
     .catch((error) => {
+      console.log(error);
       if (error.name === 'CastError') {
         next(new BAD_REQUEST('Ошибка проверки данных'));
       }
@@ -76,7 +79,6 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.login = (req, res, next) => {
-  console.log('fsdfsdffsdfdfsdf', req.user._id);
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -90,15 +92,13 @@ module.exports.login = (req, res, next) => {
 };
 
 // user/me
-module.exports.getUserMe = (req, res) => {
-  console.log('fsdfsdffsdfdfsdf', req.user._id);
-  // User.findById(req.user._id)
-  //   .orFail(() => {
-  //     throw new UserNotFound();
-  //   })
-  //   .then((user) => res.send(user))
-  //   .catch(next);
-  res.send('ffsdfs');
+module.exports.getUserMe = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(() => {
+      throw new UserNotFound();
+    })
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
