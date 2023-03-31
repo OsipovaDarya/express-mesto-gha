@@ -1,17 +1,14 @@
 const Card = require('../models/card');
 const UserNotFound = require('../errors/UserNotFound');
-const { BAD_REQUEST, INTERNAL_SERVERE_ERROR, NOT_FOUND } = require('../errors/Constans');
-// const CastError = require('../errors/CastError');
+const { BAD_REQUEST, NOT_FOUND } = require('../errors/Constans');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((card) => res.send({ data: card }))
-    .catch(() => {
-      res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
-    });
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
@@ -20,12 +17,12 @@ module.exports.createCard = (req, res) => {
       if (error.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+        next(error);
       }
     });
 };
 
-module.exports.deleteCards = (req, res) => {
+module.exports.deleteCards = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
       throw new UserNotFound();
@@ -38,12 +35,12 @@ module.exports.deleteCards = (req, res) => {
       if (error.name === 'UserNotFound') {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
-        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+        next(error);
       }
     });
 };
 
-module.exports.putLikes = (req, res) => {
+module.exports.putLikes = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -60,12 +57,12 @@ module.exports.putLikes = (req, res) => {
       if (error.name === 'UserNotFound') {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
-        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+        next(error);
       }
     });
 };
 
-module.exports.deleteLikes = (req, res) => {
+module.exports.deleteLikes = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -82,7 +79,7 @@ module.exports.deleteLikes = (req, res) => {
       if (error.name === 'UserNotFound') {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
-        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+        next(error);
       }
     });
 };

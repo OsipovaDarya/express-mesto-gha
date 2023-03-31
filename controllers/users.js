@@ -6,40 +6,27 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 const UserNotFound = require('../errors/UserNotFound');
 const ConflictingRequest = require('../errors/ConflictingRequest');
 const CastError = require('../errors/CastError');
-const AuthorizedError = require('../errors/AuthorizedError');
 
 const {
-  BAD_REQUEST, INTERNAL_SERVERE_ERROR, NOT_FOUND,
+  BAD_REQUEST, NOT_FOUND,
 } = require('../errors/Constans');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((user) => {
-      if (!user) {
-        throw new AuthorizedError('Нужно пройти авторизацию');
-      }
-      return res.send(user);
-    })
-    .catch((err) => {
-      next(err);
-    });
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
-  console.log('fsdf', userId);
   User.findById(userId)
     .orFail(() => {
       throw new UserNotFound();
     })
     .then((users) => res.send(users))
     .catch((error) => {
-      console.log(error);
       if (error.name === 'CastError') {
         next(new BAD_REQUEST('Ошибка проверки данных'));
-      }
-      if (error.name === 'UserNotFound') {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         next(error);
       }
@@ -86,7 +73,6 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch((error) => {
-      console.log(error);
       next(error);
     });
 };
@@ -117,7 +103,7 @@ module.exports.updateUser = (req, res, next) => {
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
@@ -128,7 +114,7 @@ module.exports.updateUserAvatar = (req, res) => {
       if (error.name === 'UserNotFound') {
         res.status(NOT_FOUND).send({ message: 'Ошибка проверки данных' });
       } else {
-        res.status(INTERNAL_SERVERE_ERROR).send({ message: 'Произошла ошибка' });
+        next(error);
       }
     });
 };

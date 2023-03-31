@@ -1,11 +1,11 @@
 const { INTERNAL_SERVERE_ERROR } = require('./Constans');
 
 class AplicationError extends Error {
-  constructor(status = INTERNAL_SERVERE_ERROR, message = 'Внутрення ошибка') {
-    super();
-    this.status = status;
+  constructor(message) {
+    super(message);
     this.message = message;
-    this.name = this.constructor.name;
+    this.name = 'internalServereError';
+    this.statusCode = INTERNAL_SERVERE_ERROR;
 
     Error.captureStackTrace(this, this.constructor);
   }

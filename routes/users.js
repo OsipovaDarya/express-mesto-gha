@@ -1,6 +1,7 @@
 const { celebrate, Joi } = require('celebrate');
 
 const router = require('express').Router();
+const { URL } = require('../utils/url');
 
 const {
   getUser, getUsers, updateUser, updateUserAvatar, getUserMe,
@@ -12,7 +13,7 @@ router.get('/me', getUserMe);
 
 router.get('/:userId', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().length(24).hex(),
+    userId: Joi.string().length(24).hex().required(),
   }),
 }), getUser);
 // router.post('/users', createUser); // cоздает
@@ -26,7 +27,7 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/),
+    avatar: Joi.string().required().regex(URL),
   }),
 }), updateUserAvatar); // обновляет аватар
 
