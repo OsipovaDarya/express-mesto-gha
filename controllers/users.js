@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
-const UserNotFound = require('../errors/UserNotFound');
+const NotFound = require('../errors/NotFound');
 const ConflictingRequest = require('../errors/ConflictingRequest');
 const CastError = require('../errors/CastError');
 
@@ -21,7 +21,7 @@ module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
   User.findById(userId)
     .orFail(() => {
-      throw new UserNotFound();
+      throw new NotFound();
     })
     .then((users) => res.send(users))
     .catch((error) => {
@@ -81,7 +81,7 @@ module.exports.login = (req, res, next) => {
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      throw new UserNotFound();
+      throw new NotFound();
     })
     .then((user) => res.send(user))
     .catch(next);
@@ -91,7 +91,7 @@ module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
-      throw new UserNotFound();
+      throw new NotFound();
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
@@ -107,11 +107,11 @@ module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
-      throw new UserNotFound();
+      throw new NotFound();
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
-      if (error.name === 'UserNotFound') {
+      if (error.name === 'NotFound') {
         res.status(NOT_FOUND).send({ message: 'Ошибка проверки данных' });
       } else {
         next(error);

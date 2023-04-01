@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const UserNotFound = require('../errors/UserNotFound');
+const NotFound = require('../errors/NotFound');
 const { BAD_REQUEST, NOT_FOUND } = require('../errors/Constans');
 
 module.exports.getCards = (req, res, next) => {
@@ -25,14 +25,14 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCards = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
-      throw new UserNotFound();
+      throw new NotFound();
     })
     .then((card) => res.send({ data: card }))
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       }
-      if (error.name === 'UserNotFound') {
+      if (error.name === 'NotFound') {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         next(error);
@@ -47,14 +47,14 @@ module.exports.putLikes = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new UserNotFound();
+      throw new NotFound();
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       }
-      if (error.name === 'UserNotFound') {
+      if (error.name === 'NotFound') {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         next(error);
@@ -69,14 +69,14 @@ module.exports.deleteLikes = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new UserNotFound();
+      throw new NotFound();
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
       }
-      if (error.name === 'UserNotFound') {
+      if (error.name === 'NotFound') {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         next(error);

@@ -4,7 +4,7 @@ const { createUser, login } = require('../controllers/users');
 const auth = require('../middlewares/auth');
 const usersRoutes = require('./users');
 const cardsRoutes = require('./cards');
-const UserNotFound = require('../errors/UserNotFound');
+const NotFound = require('../errors/NotFound');
 const { URL } = require('../utils/url');
 
 router.post('/signup', celebrate({
@@ -29,6 +29,6 @@ router.use(auth);
 router.use('/users', usersRoutes);
 router.use('/', cardsRoutes);
 
-router.use('*', (req, res, next) => next(new UserNotFound('Неправильный путь')));
+router.use('*', (req, res, next) => next(new NotFound('Неправильный путь')));
 
 module.exports = router;

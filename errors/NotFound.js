@@ -1,9 +1,9 @@
 const { NOT_FOUND } = require('./Constans');
 
-class UserNotFound extends Error {
+class NotFound extends Error {
   constructor() {
     super(NOT_FOUND, 'Пользователь не найден');
   }
 }
 
-module.exports = UserNotFound;
+module.exports = NotFound;
