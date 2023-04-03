@@ -1,8 +1,9 @@
 const { NOT_FOUND } = require('./Constans');
 
 class NotFound extends Error {
-  constructor() {
-    super(NOT_FOUND, 'Пользователь не найден');
+  constructor(message) {
+    super(message);
+    this.statusCode = NOT_FOUND;
   }
 }
 
