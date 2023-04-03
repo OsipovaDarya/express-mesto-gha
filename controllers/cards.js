@@ -27,7 +27,7 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCards = (req, res, next) => {
   Card.findById(req.params.cardId)
     .orFail(() => {
-      throw new NotFound();
+      throw new NotFound('Чужую карточку удалить нельзя');
     })
     .then((card) => {
       const owner = card.owner.toString();
@@ -57,7 +57,7 @@ module.exports.putLikes = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new NotFound();
+      throw new NotFound('Карточка не найдена');
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
@@ -76,7 +76,7 @@ module.exports.deleteLikes = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new NotFound();
+      throw new NotFound('Карточка не найдена');
     })
     .then((users) => res.send({ data: users }))
     .catch((error) => {
@@ -86,4 +86,5 @@ module.exports.deleteLikes = (req, res, next) => {
         next(error);
       }
     });
+  console.log('dasdsa', NotFound);
 };
