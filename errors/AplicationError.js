@@ -3,7 +3,6 @@ const { INTERNAL_SERVERE_ERROR } = require('./Constans');
 class AplicationError extends Error {
   constructor(message) {
     super(message);
-    this.message = message;
     this.name = 'internalServereError';
     this.statusCode = INTERNAL_SERVERE_ERROR;
 

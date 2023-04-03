@@ -12,20 +12,17 @@ const сardsShema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: {
-        isURL,
-      },
-      message: 'Неправильный формат почты',
+      validator: isURL,
     },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
+    ref: 'User',
     require: true,
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
+    ref: 'User',
     default: [],
   }],
   createdAt: {

@@ -1,9 +1,11 @@
 const Card = require('../models/card');
 const NotFound = require('../errors/NotFound');
-const { BAD_REQUEST, NOT_FOUND } = require('../errors/Constans');
+const { BAD_REQUEST } = require('../errors/Constans');
+const Forbidden = require('../errors/Forbidden');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
+    .populate(['owner', 'likes'])
     .then((card) => res.send({ data: card }))
     .catch(next);
 };
@@ -23,17 +25,19 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCards = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .orFail(() => {
       throw new NotFound();
     })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (`${card.owner}` !== req.user._id) {
+        throw new Forbidden('Чужую карточку нельзя удалить');
+      }
+      return Card.findByIdAndRemove(req.params.cardId);
+    })
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
-      }
-      if (error.name === 'NotFound') {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         next(error);
       }
@@ -53,9 +57,6 @@ module.exports.putLikes = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
-      }
-      if (error.name === 'NotFound') {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         next(error);
       }
@@ -75,9 +76,6 @@ module.exports.deleteLikes = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
-      }
-      if (error.name === 'NotFound') {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         next(error);
       }
