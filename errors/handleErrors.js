@@ -1,7 +1,6 @@
 const { INTERNAL_SERVERE_ERROR } = require('./Constans');
 
 const handleErrors = (err, req, res, next) => {
-  console.log(err);
   if (err.statusCode) {
     res.status(err.statusCode).send({ message: err.message });
   } else {
