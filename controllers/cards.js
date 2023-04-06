@@ -6,7 +6,7 @@ const Forbidden = require('../errors/Forbidden');
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate(['owner', 'likes'])
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch(next);
 };
 
@@ -14,7 +14,7 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
@@ -56,10 +56,11 @@ module.exports.putLikes = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .populate(['likes', 'owner'])
     .orFail(() => {
       throw new NotFound('Карточка не найдена');
     })
-    .then((users) => res.send({ data: users }))
+    .then((card) => res.send(card))
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
@@ -75,10 +76,11 @@ module.exports.deleteLikes = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .populate(['owner', 'likes'])
     .orFail(() => {
       throw new NotFound('Карточка не найдена');
     })
-    .then((users) => res.send({ data: users }))
+    .then((card) => res.send(card))
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка проверки данных' });
@@ -86,5 +88,4 @@ module.exports.deleteLikes = (req, res, next) => {
         next(error);
       }
     });
-  console.log('dasdsa', NotFound);
 };
